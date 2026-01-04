@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutina Semanal Shotokan Elite</title>
+
+    <!-- GSAP for Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        /* Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@200;400;700;900&display=swap');
+
+        :root {
+            --kuma-black: #0a0a0a;
+            --kuma-dark-gray: #1a1a1a;
+            --kuma-gold: #c5a028;
+            --kuma-gold-dim: #8a7019;
+            --kuma-red: #d32f2f;
+            --kuma-white: #e0e0e0;
+            --kuma-glass: rgba(255, 255, 255, 0.05);
+            --kuma-glass-border: rgba(255, 255, 255, 0.1);
+            --font-main: 'Outfit', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--kuma-black);
+            color: var(--kuma-white);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            padding-bottom: 80px;
+            /* Space for control bar */
+        }
+
+        /* --- Branding & Header --- */
+        .hero-header {
+            position: relative;
+            height: 40vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #2a2a2a 0%, #000 70%);
+            overflow: hidden;
+            border-bottom: 2px solid var(--kuma-gold);
+        }
+
+        .logo-container {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px var(--kuma-gold-dim);
+            animation: breath 4s infinite ease-in-out;
+            margin-bottom: 20px;
+            border: 2px solid var(--kuma-gold);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes breath {
+
+            0%,
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 20px var(--kuma-gold-dim);
+            }
+
+            50% {
+                transform: scale(1.05);
+                box-shadow: 0 0 40px var(--kuma-gold);
+            }
+        }
+
+        .title-main {
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to right, #fff, var(--kuma-gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            /* Compatibility fix */
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .subtitle-elite {
+            font-size: 1rem;
+            color: var(--kuma-gold);
+            letter-spacing: 5px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            font-weight: 200;
+        }
+
+        /* --- Day Navigation --- */
+        .day-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            padding: 30px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--kuma-glass-border);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid var(--kuma-glass-border);
+            color: #666;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-weight: 700;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn.active {
+            background: var(--kuma-gold);
+            color: var(--kuma-black);
+            box-shadow: 0 0 15px var(--kuma-gold-dim);
+            border-color: var(--kuma-gold);
+        }
+
+        /* --- Content Container --- */
+        .routine-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 50vh;
+        }
+
+        /* --- Phase Cards & Themes --- */
+        .phase-card {
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* GUIDED MODE STYLES */
+        body.guided-mode .phase-card {
+            transition: none;
+            /* Let GSAP handle it for smoother feel */
+        }
+
+        body.guided-mode .phase-card.active-phase {
+            /* Style handled by GSAP mostly, but base overrides here */
+            pointer-events: all;
+            z-index: 10;
+            /* Bring to top */
+        }
+
+
+        /* TIERRA (Earth) */
+        .theme-earth .phase-card {
+            background: linear-gradient(135deg, #1a1510 0%, #3e2723 100%);
+            border-left: 6px solid #8d6e63;
+        }
+
+        .theme-earth .phase-focus {
+            color: #d7ccc8;
+        }
+
+        .theme-earth .ex-reps {
+            color: #8d6e63;
+            background: rgba(141, 110, 99, 0.1);
+        }
+
+        /* AGUA (Water) */
+        .theme-water .phase-card {
+            background: linear-gradient(135deg, #0a192f 0%, #0d47a1 100%);
+            border-left: 6px solid #2196f3;
+        }
+
+        .theme-water .phase-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: radial-gradient(circle at top right, rgba(33, 150, 243, 0.1), transparent 60%);
+            pointer-events: none;
+        }
+
+        .theme-water .phase-focus {
+            color: #bbdefb;
+        }
+
+        .theme-water .ex-reps {
+            color: #2196f3;
+            background: rgba(33, 150, 243, 0.1);
+        }
+
+        /* FUEGO (Fire) */
+        .theme-fire .phase-card {
+            background: linear-gradient(135deg, #210a0a 0%, #b71c1c 100%);
+            border-left: 6px solid #ff5722;
+        }
+
+        .theme-fire .phase-focus {
+            color: #ffccbc;
+        }
+
+        .theme-fire .ex-reps {
+            color: #ff5722;
+            background: rgba(255, 87, 34, 0.1);
+        }
+
+        /* VIENTO (Wind - Thursday) */
+        .theme-wind .phase-card {
+            background: linear-gradient(135deg, #004d40 0%, #00695c 100%);
+            /* Deep Cyan/Teal */
+            border-left: 6px solid #1de9b6;
+            /* Bright Teal Accent */
+        }
+
+        .theme-wind .phase-focus {
+            color: #b2dfdb;
+        }
+
+        .theme-wind .ex-reps {
+            color: #1de9b6;
+            background: rgba(29, 233, 182, 0.1);
+        }
+
+        /* ELITE GOLD (Tuesday/Thursday) */
+        .theme-gold .phase-card {
+            background: linear-gradient(135deg, #3a2c0f 0%, #aa771c 100%);
+            /* Deep luxurious gold */
+            border-left: 6px solid #ffd700;
+            /* Bright pure gold */
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .theme-gold .phase-focus {
+            color: #f7e7ce;
+            /* Champagne gold text */
+        }
+
+        .theme-gold .ex-reps {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        /* VACÍO (Wednesday - Void) */
+        .theme-void .phase-card {
+            background: linear-gradient(135deg, #2e003e 0%, #4a148c 100%);
+            /* Deep Purple */
+            border-left: 6px solid #d1c4e9;
+            /* Ethereal Lavender */
+        }
+
+        .theme-void .phase-focus {
+            color: #e1bee7;
+        }
+
+        .theme-void .ex-reps {
+            color: #d1c4e9;
+            background: rgba(209, 196, 233, 0.1);
+        }
+
+        .phase-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 15px;
+        }
+
+        .phase-time {
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .phase-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .phase-focus {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            margin-top: 5px;
+            letter-spacing: 1px;
+        }
+
+        /* --- Exercises List --- */
+        .exercise-list {
+            list-style: none;
+        }
+
+        .exercise-item {
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            border-left: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .exercise-item:hover {
+            border-left: 2px solid var(--kuma-gold);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .ex-name-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ex-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .ex-reps {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .ex-focus {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ex-focus::before {
+            content: '•';
+            color: var(--kuma-red);
+            font-size: 1.2rem;
+        }
+
+        /* --- TOOLS --- */
+        .tools-panel {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .tool-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .tool-btn:hover {
+            border-color: var(--kuma-gold);
+            color: #fff;
+        }
+
+        .tool-overlay {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+            border: 1px solid var(--kuma-gold-dim);
+        }
+
+        .active-tool {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .timer-display {
+            font-size: 2rem;
+            font-weight: 900;
+            text-align: center;
+            font-family: monospace;
+            color: var(--kuma-gold);
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- SVG Progress Ring --- */
+        .timer-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 10px auto;
+            display: flex;
+            /* Center logic */
+            justify-content: center;
+            align-items: center;
+        }
+
+        .timer-ring {
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .timer-ring__circle {
+            stroke: var(--kuma-gold);
+            stroke-width: 8;
+            fill: transparent;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+            /* Smooth count */
+        }
+
+        .timer-text-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: #fff;
+            font-family: monospace;
+        }
+
+        /* --- CONTROL BAR (Sticky Footer) --- */
+        .control-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(15px);
+            border-top: 2px solid var(--kuma-gold);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .control-bar.active {
+            transform: translateY(0);
+        }
+
+        .session-info {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .session-timer {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--kuma-white);
+        }
+
+        .control-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn-control {
+            background: var(--kuma-dark-gray);
+            color: #fff;
+            border: 1px solid var(--kuma-gold);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-control:hover {
+            background: var(--kuma-gold-dim);
+        }
+
+        .btn-action-main {
+            background: var(--kuma-gold);
+            color: var(--kuma-black);
+        }
+
+        /* --- Start Button in UI --- */
+        .start-routine-btn {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px;
+            background: var(--kuma-green, #2e7d32);
+            /* Success green */
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .start-routine-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* --- RESPONSIVE DESIGN --- */
+
+        /* Tablet & Smaller Desktop (Max 900px) */
+        @media (max-width: 900px) {
+            .routine-container {
+                padding: 15px;
+            }
+
+            .hero-header {
+                height: 35vh;
+            }
+
+            .title-main {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* Mobile Devices (Max 600px) */
+        @media (max-width: 600px) {
+            .hero-header {
+                height: 30vh;
+                /* Compact header */
+            }
+
+            .title-main {
+                font-size: 1.6rem;
+                padding: 0 10px;
+            }
+
+            .subtitle-elite {
+                font-size: 0.8rem;
+                letter-spacing: 3px;
+            }
+
+            .logo-container {
+                width: 100px;
+                height: 100px;
+                margin-bottom: 10px;
+            }
+
+            .day-nav {
+                padding: 15px 10px;
+                gap: 8px;
+                overflow-x: auto;
+                /* Allow scroll if needed on very small screens */
+                justify-content: flex-start;
+                /* Left align for scroll */
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .nav-btn {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+                flex: 0 0 auto;
+                /* Don't shrink */
+            }
+
+            .phase-card {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+
+            .phase-title {
+                font-size: 1.2rem;
+            }
+
+            .exercise-item {
+                padding: 12px;
+            }
+
+            .ex-name {
+                font-size: 1rem;
+            }
+
+            /* Sticker control bar optimization */
+            .control-bar {
+                flex-direction: row;
+                /* Keep row but wrap if needed */
+                flex-wrap: wrap;
+                padding: 10px 15px;
+            }
+
+            .session-info {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 8px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .session-info div {
+                display: inline-block;
+            }
+
+            .control-actions {
+                width: 100%;
+                gap: 8px;
+            }
+
+            .btn-control {
+                flex: 1;
+                padding: 12px 10px;
+                /* Larger touch target */
+                font-size: 0.85rem;
+            }
+        }
+
+        /* Small Mobile (Max 380px) */
+        @media (max-width: 380px) {
+            .title-main {
+                font-size: 1.3rem;
+            }
+
+            .logo-container {
+                width: 80px;
+                height: 80px;
+            }
+
+            .nav-btn {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+        }
+
+        /* Landscape Mobile (Height < 500px) */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero-header {
+                height: 50vh;
+                flex-direction: row;
+                gap: 20px;
+                align-items: center;
+                text-align: left;
+            }
+
+            .hero-header .logo-container {
+                margin-bottom: 0;
+                width: 80px;
+                height: 80px;
+            }
+
+            .title-main {
+                text-align: left;
+                font-size: 1.5rem;
+            }
+
+            .day-nav {
+                position: static;
+                /* Unstick nav in landscape to save vertical space */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO HEADER -->
+    <header class="hero-header">
+        <div class="logo-container">
+            <!-- Ensure logoKuma.jpg is in the same folder -->
+            <img src="logoKuma.jpg" alt="Kuma Logo" id="kuma-logo">
+        </div>
+        <h1 class="title-main">KUMA ELITE SQUAD</h1>
+        <div class="subtitle-elite">SISTEMA DE ENTRENAMIENTO 18+</div>
+    </header>
+
+    <!-- DAY NAVIGATION -->
+    <nav class="day-nav">
+        <button class="nav-btn" onclick="loadDay('monday')">LUNES (Tierra)</button>
+        <button class="nav-btn" onclick="loadDay('tuesday')">MARTES (Gold)</button>
+        <button class="nav-btn" onclick="loadDay('wednesday')">MIERCOLES (Agua)</button>
+        <button class="nav-btn" onclick="loadDay('thursday')">JUEVES (Gold)</button>
+        <button class="nav-btn" onclick="loadDay('friday')">VIERNES (Fuego)</button>
+    </nav>
+
+    <!-- START BUTTON AREA -->
+    <div id="start-area" style="text-align: center; display:none;">
+        <button class="start-routine-btn" onclick="startGuidedSession()">▶ INICIAR ENTRENAMIENTO</button>
+    </div>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="routine-container" class="routine-container">
+        <!-- Content inject by JS -->
+        <div style="text-align: center; padding-top: 50px; color: #666;">
+            Selecciona un día para comenzar.
+        </div>
+    </main>
+
+    <!-- STICKY CONTROL BAR (Hidden initially) -->
+    <div id="control-bar" class="control-bar">
+        <div class="session-info">
+            <div>TIEMPO TOTAL</div>
+            <div class="session-timer" id="global-timer">00:00</div>
+        </div>
+        <div class="control-actions">
+            <button class="btn-control" onclick="togglePauseSession()" id="btn-pause">⏸ Pausar</button>
+            <button class="btn-control btn-action-main" onclick="nextPhase()">Siguiente ⏩</button>
+        </div>
+    </div>
+
+    <script>
+        const weeklyRoutine = {
+            settings: {
+                userLevel: "Elite",
+                ageGroup: "18+",
+                sessionDuration: 120 // 2 hours for Tue/Thu
+            },
+            days: {
+                monday: {
+                    id: "monday",
+                    name: "LUNES",
+                    theme: "TIERRA (Estabilidad)",
+                    focus: "Tren Inferior y Raíces",
+                    color: "#8B4513", // Earthy brown/gold
+                    phases: [
+                        {
+                            time: "19:00 - 19:15",
+                            title: "Activación: Despertar",
+                            type: "warmup",
+                            exercises: [
+                                { name: "Movilidad de Tobillos", reps: "2 min", focus: "Prevenir esguinces" },
+                                { name: "Sentadilla Isométrica", reps: "3 x 30s", focus: "Apertura de cadera" },
+                                { name: "Caminata Shiko Dachi", reps: "3 min", focus: "Aductores" }
+                            ]
+                        },
+                        {
+                            time: "19:15 - 19:30",
+                            title: "Potencia Controlada",
+                            type: "power",
+                            exercises: [
+                                { name: "Saltos Verticales", reps: "3 x 10", focus: "Explosión de gemelos" },
+                                { name: "Zenkutsu Explosivo", reps: "3 x 1 min", focus: "Frenado muscular" }
+                            ]
+                        },
+                        {
+                            time: "19:30 - 20:00",
+                            title: "Técnica: Base Inamovible",
+                            type: "technical",
+                            exercises: [
+                                { name: "Mae Geri Lento 4T", reps: "10/pierna", focus: "Control de cuádriceps" },
+                                { name: "Yoko Geri Kekomi", reps: "5/pierna", focus: "Glúteo Medio" },
+                                { name: "Kihon Zenkutsu", reps: "15 min", focus: "Altura constante" }
+                            ]
+                        },
+                        {
+                            time: "20:00 - 20:30",
+                            title: "Espíritu: Resistencia",
+                            type: "spirit",
+                            exercises: [
+                                { name: "Kiba Dachi + Zuki", reps: "5 min", focus: "Mente sobre cuerpo" },
+                                { name: "Sambon Zuki", reps: "50 reps", focus: "Final fuerte" }
+                            ]
+                        }
+                    ]
+                },
+                tuesday: {
+                    id: "tuesday",
+                    name: "MARTES",
+                    theme: "ELITE GOLD (Tecnificación)",
+                    focus: "Kata (17-18h) & Kumite Speed (18-19h)",
+                    color: "#D4AF37", // Metallic Gold
+                    phases: [
+                        {
+                            time: "17:00 - 17:15",
+                            title: "KATA: Movilidad Articular",
+                            type: "warmup",
+                            exercises: [
+                                { name: "Rotación Externa Cadera", reps: "3 min", focus: "Posturas bajas" },
+                                { name: "Movilidad Torácica", reps: "3 min", focus: "Expansión en movimientos" },
+                                { name: "Flow Drill (Suelo)", reps: "5 min", focus: "Conexión corporal" }
+                            ]
+                        },
+                        {
+                            time: "17:15 - 18:00",
+                            title: "KATA: Fundamentos & Bunkai",
+                            type: "technical",
+                            exercises: [
+                                { name: "Segmentación de Kata", reps: "3 x Kata", focus: "Detalle técnico por secuencia" },
+                                { name: "Transiciones Lentas", reps: "15 min", focus: "Control de peso y equilibrio" },
+                                { name: "Bunkai Aplicado (Parejas)", reps: "15 min", focus: "Entendimiento real del movimiento" }
+                            ]
+                        },
+                        {
+                            time: "18:00 - 18:15",
+                            title: "KUMITE: Activación Reactiva",
+                            type: "power",
+                            exercises: [
+                                { name: "Reaction Ball / Luces", reps: "5 min", focus: "Ojo-Mano Coordinación" },
+                                { name: "Salidas de Sprint (Visual)", reps: "10 reps", focus: "Primer paso explosivo" }
+                            ]
+                        },
+                        {
+                            time: "18:15 - 19:00",
+                            title: "KUMITE: Velocidad Pura",
+                            type: "spirit",
+                            exercises: [
+                                { name: "Kizami Zuki (Goma elástica)", reps: "3 x 1 min", focus: "Retracción invisible" },
+                                { name: "Gyaku Zuki a reacción", reps: "20 reps", focus: "Sin telegrafiar" },
+                                { name: "Sparring de Velocidad (Touch)", reps: "5 rounds", focus: "El primero en tocar gana" }
+                            ]
+                        }
+                    ]
+                },
+                wednesday: {
+                    id: "wednesday",
+                    name: "MIÉRCOLES",
+                    theme: "AGUA (Fluidez)",
+                    focus: "Mente, Respiración y Precisión",
+                    color: "#1E90FF", // Water Blue
+                    phases: [
+                        {
+                            time: "19:00 - 19:15",
+                            title: "Activación: Respiración",
+                            type: "warmup",
+                            exercises: [
+                                { name: "Respiración Ibuki (Nogarel)", reps: "5 min", focus: "Conexión Tanden" },
+                                { name: "Movilidad de Columna (Olas)", reps: "5 min", focus: "Fluidez Espinal" },
+                                { name: "Equilibrio a una pierna (Ojos cerrados)", reps: "3 min", focus: "Propiocepción" }
+                            ]
+                        },
+                        {
+                            time: "19:15 - 19:45",
+                            title: "Técnica: Cámara Lenta",
+                            type: "technical",
+                            exercises: [
+                                { name: "Kata Super Lento (10s por mov)", reps: "2 Katas", focus: "Perfección de trayectoria" },
+                                { name: "Isometría en Kime (Sostener)", reps: "3s por técnica", focus: "Contracción máxima" }
+                            ]
+                        },
+                        {
+                            time: "19:45 - 20:15",
+                            title: "Espíritu: Mushin (No Mente)",
+                            type: "spirit",
+                            exercises: [
+                                { name: "1000 Técnicas (Sin contar)", reps: "Flujo continuo", focus: "Meditación en movimiento" },
+                                { name: "Mokuso Profundo", reps: "10 min", focus: "Visualización del éxito" }
+                            ]
+                        },
+                        {
+                            time: "20:15 - 20:30",
+                            title: "Cierre",
+                            type: "cool_down",
+                            exercises: [
+                                { name: "Estiramiento Pasivo Profundo", reps: "10 min", focus: "Relajación total" }
+                            ]
+                        }
+                    ]
+                },
+                thursday: {
+                    id: "thursday",
+                    name: "JUEVES",
+                    theme: "ELITE GOLD (Alto Rendimiento)",
+                    focus: "Kata Ritmo (17-18h) & Kumite Anticipación (18-19h)",
+                    color: "#D4AF37", // Metallic Gold
+                    phases: [
+                        {
+                            time: "17:00 - 17:15",
+                            title: "KATA: Activación Rítmica",
+                            type: "warmup",
+                            exercises: [
+                                { name: "Saltos Coordinación", reps: "3 min", focus: "Ritmo ligero" },
+                                { name: "Escalera de Agilidad", reps: "5 min", focus: "Pies rápidos" },
+                                { name: "Respiración Ibuki", reps: "2 min", focus: "Activación del Core" }
+                            ]
+                        },
+                        {
+                            time: "17:15 - 18:00",
+                            title: "KATA: Kime y Velocidad",
+                            type: "technical",
+                            exercises: [
+                                { name: "Kata con Gomas (Resistencia)", reps: "3 pasadas", focus: "Potencia al final (Kime)" },
+                                { name: "Overspeed Kata (Acelerar)", reps: "3 pasadas", focus: "Romper barrera de velocidad" },
+                                { name: "Visualización", reps: "5 min", focus: "Kata perfecto en la mente" }
+                            ]
+                        },
+                        {
+                            time: "18:00 - 18:20",
+                            title: "KUMITE: Pliometría Reactiva",
+                            type: "power",
+                            exercises: [
+                                { name: "Drop Jumps to Attack", reps: "3 x 8", focus: "Tiempo de contacto mínimo" },
+                                { name: "Rebote Lateral Reactivo", reps: "3 x 30s", focus: "Cambio de dirección" }
+                            ]
+                        },
+                        {
+                            time: "18:20 - 19:00",
+                            title: "KUMITE: Anticipación (Sen)",
+                            type: "spirit",
+                            exercises: [
+                                { name: "Sen-no-Sen Drill (Intercepción)", reps: "15 min", focus: "Atacar el ataque" },
+                                { name: "Tai Sabaki Drill", reps: "10 min", focus: "Esquiva y contra simultánea" },
+                                { name: "Situación de Presión", reps: "10 min", focus: "Resolver bajo estrés" }
+                            ]
+                        }
+                    ]
+                },
+                friday: {
+                    id: "friday",
+                    name: "VIERNES",
+                    theme: "FUEGO (Explosión)",
+                    focus: "Cuerpo Completo y Kumite",
+                    color: "#FF4500", // Fire red
+                    phases: [
+                        {
+                            time: "19:00 - 19:15",
+                            title: "Activación: PRE-HAB",
+                            type: "warmup",
+                            exercises: [
+                                { name: "Movilidad de Hombros", reps: "3 min", focus: "Manguito rotador" },
+                                { name: "Saltos de Cuerda", reps: "5 min", focus: "Ritmo" },
+                                { name: "Desplazamientos Laterales", reps: "3 min", focus: "Ingle" }
+                            ]
+                        },
+                        {
+                            time: "19:15 - 19:40",
+                            title: "Pliometría Pura (Fuego)",
+                            type: "power",
+                            exercises: [
+                                { name: "Clap Pushups", reps: "3 x 8", focus: "Potencia Tren Superior" },
+                                { name: "Tuck Jumps", reps: "3 x 10", focus: "Potencia Abdominal" },
+                                { name: "Burpees + Gyaku", reps: "3 x 10", focus: "Acondicionamiento" }
+                            ]
+                        },
+                        {
+                            time: "19:40 - 20:10",
+                            title: "Técnica: Impacto",
+                            type: "technical",
+                            exercises: [
+                                { name: "Kizami-Gyaku (Saco/Makiwara)", reps: "10 min", focus: "Penetración" },
+                                { name: "Ura Mawashi Geri", reps: "10 min", focus: "Flexibilidad Dinámica" }
+                            ]
+                        },
+                        {
+                            time: "20:10 - 20:30",
+                            title: "Espíritu: Guerrero",
+                            type: "spirit",
+                            exercises: [
+                                { name: "Kumite Libre", reps: "5 rounds", focus: "Aplicación Total" },
+                                { name: "100 Tsuki Finales", reps: "1 set", focus: "Kiai Espíritu" }
+                            ]
+                        }
+                    ]
+                }
+            }
+        };
+
+        // PARTICLES SYSTEM
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.createElement('canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.id = 'particle-canvas';
+                this.canvas.style.position = 'fixed';
+                this.canvas.style.top = '0';
+                this.canvas.style.left = '0';
+                this.canvas.style.width = '100%';
+                this.canvas.style.height = '100%';
+                this.canvas.style.zIndex = '-1'; // Behind everything
+                this.canvas.style.pointerEvents = 'none';
+                document.body.appendChild(this.canvas);
+
+                this.particles = [];
+                this.activeTheme = null;
+                this.resize();
+
+                window.addEventListener('resize', () => this.resize());
+                this.animate();
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            setTheme(theme) {
+                if (this.activeTheme === theme) return;
+                this.activeTheme = theme;
+                this.particles = []; // Clear old
+
+                // Spawn initial batch
+                const count = window.innerWidth < 600 ? 30 : 60;
+                for (let i = 0; i < count; i++) {
+                    this.addParticle(true);
+                }
+            }
+
+            addParticle(randomY = false) {
+                if (!this.activeTheme) return;
+
+                let p = {
+                    x: Math.random() * this.canvas.width,
+                    y: randomY ? Math.random() * this.canvas.height : this.canvas.height + 10,
+                    size: 0,
+                    speedY: 0,
+                    speedX: 0,
+                    opacity: 0,
+                    life: 1,
+                    decay: 0
+                };
+
+                if (this.activeTheme === 'fire') {
+                    // Embers
+                    p.size = Math.random() * 3 + 1;
+                    p.speedY = Math.random() * -3 - 1; // Up fast
+                    p.speedX = (Math.random() - 0.5) * 2; // Wiggle
+                    p.color = `rgba(255, ${Math.floor(Math.random() * 100)}, 0,`;
+                    p.decay = Math.random() * 0.02 + 0.005;
+                    p.opacity = 1;
+                }
+                else if (this.activeTheme === 'water') {
+                    // Bubbles
+                    p.size = Math.random() * 4 + 1;
+                    p.speedY = Math.random() * -1 - 0.5; // Up slow
+                    p.speedX = Math.sin(Math.random() * Math.PI * 2);
+                    p.color = `rgba(100, 200, 255,`;
+                    p.decay = Math.random() * 0.005 + 0.001;
+                    p.opacity = Math.random() * 0.5 + 0.2;
+                }
+                else if (this.activeTheme === 'earth') {
+                    // Dust/Ash
+                    p.size = Math.random() * 2 + 0.5;
+                    p.speedY = Math.random() * 0.5 - 0.25; // Float
+                    p.speedX = Math.random() * 0.5 - 0.25;
+                    p.color = `rgba(160, 140, 120,`;
+                    p.decay = Math.random() * 0.002 + 0.001;
+                    p.opacity = Math.random() * 0.4 + 0.1;
+                    if (!randomY) p.y = Math.random() * this.canvas.height; // Spawn anywhere for earth
+                }
+                else if (this.activeTheme === 'gold') {
+                    // Gold Sparkles
+                    p.size = Math.random() * 3;
+                    p.speedY = Math.random() * -0.5 - 0.2; // Slowly floating up
+                    p.speedX = (Math.random() - 0.5) * 0.5;
+                    p.color = `rgba(255, 215, 0,`; // Gold
+                    p.decay = Math.random() * 0.01 + 0.005;
+                    p.opacity = Math.random() * 0.8 + 0.2; // Glinting
+                    p.life = 1.5; // Longer life
+                }
+
+                this.particles.push(p);
+            }
+
+            animate() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+                if (this.activeTheme) {
+                    // Spawner
+                    if (this.particles.length < 60) {
+                        this.addParticle();
+                    }
+
+                    this.particles.forEach((p, index) => {
+                        p.x += p.speedX;
+                        p.y += p.speedY;
+                        p.life -= p.decay;
+
+                        if (this.activeTheme === 'water') {
+                            p.x += Math.sin(p.y * 0.05) * 0.5; // Wiggle
+                        }
+
+                        if (p.life <= 0 || p.y < -10) {
+                            this.particles.splice(index, 1);
+                        } else {
+                            this.ctx.fillStyle = `${p.color} ${p.opacity * p.life})`;
+                            this.ctx.beginPath();
+                            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
+                    });
+                }
+
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        const particles = new ParticleSystem();
+
+        // APP LOGIC
+        // State
+        let currentDayId = null;
+        let activeTimers = {}; // Store interval IDs
+        let sessionActive = false;
+        let sessionPaused = false;
+        let currentPhaseIndex = 0;
+        let globalTime = 0;
+        let globalTimerInterval = null;
+
+        // Audio Context
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playTone(freq, type, duration) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        function playGong() {
+            // Low frequency sine/triangle mix simulation
+            playTone(100, 'sine', 2.5);
+            playTone(150, 'triangle', 2.0);
+        }
+
+        function playClick() {
+            playTone(800, 'square', 0.05);
+        }
+
+        function speakSensei(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-ES';
+                utterance.rate = 1.0;
+                utterance.pitch = 0.8; // Deeper "Sensei" voice
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initial Animation for Header
+            gsap.from(".logo-container", { duration: 1.5, y: -50, opacity: 0, ease: "power4.out" });
+            gsap.from(".title-main", { duration: 1.5, y: 50, opacity: 0, delay: 0.3, ease: "power4.out" });
+
+            // Resume audio context on interaction
+            document.body.addEventListener('click', () => {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+            }, { once: true });
+        });
+
+        // Render Day Function
+        function loadDay(dayId) {
+            if (currentDayId === dayId && !sessionActive) return;
+            currentDayId = dayId;
+
+            stopSession();
+
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            const btnIndex = dayId === 'monday' ? 0 :
+                dayId === 'tuesday' ? 1 :
+                    dayId === 'wednesday' ? 2 :
+                        dayId === 'thursday' ? 3 : 4;
+
+            if (document.querySelectorAll('.nav-btn')[btnIndex]) {
+                document.querySelectorAll('.nav-btn')[btnIndex].classList.add('active');
+            }
+
+            document.getElementById('start-area').style.display = 'block';
+
+            const container = document.getElementById('routine-container');
+            container.className = 'routine-container';
+            let themeIcon = '';
+
+            // Set Theme & Particles
+            if (dayId === 'monday') {
+                container.classList.add('theme-earth');
+                themeIcon = '🌋';
+                particles.setTheme('earth');
+            }
+            if (dayId === 'tuesday') {
+                container.classList.add('theme-gold');
+                themeIcon = '🏆';
+                particles.setTheme('gold');
+            }
+            if (dayId === 'wednesday') {
+                container.classList.add('theme-water');
+                themeIcon = '🌊';
+                particles.setTheme('water');
+            }
+            if (dayId === 'thursday') {
+                container.classList.add('theme-gold');
+                themeIcon = '🥇';
+                particles.setTheme('gold');
+            }
+            if (dayId === 'friday') {
+                container.classList.add('theme-fire');
+                themeIcon = '🔥';
+                particles.setTheme('fire');
+            }
+
+            const dayData = weeklyRoutine.days[dayId];
+            if (!dayData) return;
+
+            container.innerHTML = '';
+            let htmlContent = '';
+
+            dayData.phases.forEach((phase, index) => {
+                htmlContent += `
+                <div class="phase-card phase-${index}" id="phase-${index}" style="--phase-color: ${dayData.color}">
+                    <div class="phase-header">
+                        <div>
+                            <div class="phase-time">${phase.time}</div>
+                            <div class="phase-title">${themeIcon} ${phase.title}</div>
+                            <div class="phase-focus">${phase.focus}</div>
+                        </div>
+                    </div>
+                    <ul class="exercise-list">
+                        ${phase.exercises.map((ex, exIndex) => {
+                    let startCount = 0;
+                    const numbers = ex.reps.match(/\d+/g);
+                    if (numbers && numbers.length > 0) startCount = parseInt(numbers[numbers.length - 1]);
+                    if (startCount === 0) startCount = 10;
+
+                    return `
+                            <li class="exercise-item">
+                                <div class="ex-name-row">
+                                    <span class="ex-name">${ex.name}</span>
+                                    <span class="ex-reps">${ex.reps}</span>
+                                </div>
+                                <div class="ex-focus">${ex.focus}</div>
+                                
+                                <div class="tools-panel">
+                                    <button class="tool-btn" onclick="toggleTimer(this)">⏱️ Timer</button>
+                                    <button class="tool-btn" onclick="toggleCounter(this)">🔢 Count</button>
+                                </div>
+                                
+                                <!-- SVG Timer -->
+                                <div class="tool-overlay timer-box">
+                                    <div class="timer-container">
+                                        <svg class="timer-ring" width="120" height="120">
+                                            <circle class="timer-ring__circle" stroke="white" stroke-width="4" fill="transparent" r="52" cx="60" cy="60" style="stroke-dasharray: 326; stroke-dashoffset: 0; stroke: #444;"/>
+                                            <circle id="ring-${index}-${exIndex}" class="timer-ring__circle" stroke="${dayData.color}" stroke-width="6" fill="transparent" r="52" cx="60" cy="60" style="stroke-dasharray: 326; stroke-dashoffset: 326;"/>
+                                        </svg>
+                                        <div class="timer-text-overlay">00:00</div>
+                                    </div>
+                                    <div class="timer-controls">
+                                        <button class="tool-btn" onclick="startTimer(this, 'ring-${index}-${exIndex}')">Start</button>
+                                        <button class="tool-btn" onclick="resetTimer(this, 'ring-${index}-${exIndex}')">Reset</button>
+                                    </div>
+                                </div>
+
+                                <div class="tool-overlay counter-box">
+                                    <div class="timer-display counter-display" style="color: #fff">${startCount}</div>
+                                    <div class="timer-controls">
+                                        <button class="tool-btn" onclick="adjustCounter(this, -1)">-1</button>
+                                        <button class="tool-btn" onclick="adjustCounter(this, 1)">+1</button>
+                                        <button class="tool-btn" onclick="resetCounter(this, ${startCount})">Reset</button>
+                                    </div>
+                                </div>
+                            </li>
+                        `}).join('')}
+                    </ul>
+                </div>
+                `;
+            });
+
+            container.innerHTML = htmlContent;
+
+            gsap.from(".phase-card", {
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                stagger: 0.2,
+                ease: "power2.out"
+            });
+        }
+
+        // --- GUIDED SESSION LOGIC ---
+
+        function startGuidedSession() {
+            sessionActive = true;
+            currentPhaseIndex = 0;
+
+            document.body.classList.add('guided-mode');
+            document.getElementById('start-area').style.display = 'none';
+            document.getElementById('control-bar').classList.add('active');
+
+            speakSensei("Inicio del entrenamiento. Primera fase preparada.");
+
+            focusPhase(0);
+            startGlobalTimer();
+        }
+
+        function stopSession() {
+            sessionActive = false;
+            document.body.classList.remove('guided-mode');
+            document.getElementById('control-bar').classList.remove('active');
+            stopGlobalTimer();
+            globalTime = 0;
+            updateGlobalDisplay();
+        }
+
+        function nextPhase() {
+            if (!sessionActive) return;
+
+            playClick(); // Sound feedback
+            currentPhaseIndex++;
+            const totalPhases = document.querySelectorAll('.phase-card').length;
+
+            if (currentPhaseIndex >= totalPhases) {
+                speakSensei("Entrenamiento completado. Excelente trabajo.");
+                alert("¡Entrenamiento Completado! Bien hecho.");
+                stopSession();
+                return;
+            }
+
+            const phaseTitle = document.getElementById(`phase-${currentPhaseIndex}`).querySelector('.phase-title').innerText;
+            speakSensei("Siguiente fase: " + phaseTitle);
+
+            focusPhase(currentPhaseIndex);
+        }
+
+        function focusPhase(index) {
+            document.querySelectorAll('.phase-card').forEach((card, i) => {
+                card.classList.remove('active-phase');
+                if (i < index) {
+                    gsap.to(card, { opacity: 0.3, filter: "grayscale(100%)", scale: 0.98, duration: 0.5 });
+                } else if (i === index) {
+                    card.classList.add('active-phase');
+                    gsap.to(card, { opacity: 1, filter: "grayscale(0%)", scale: 1.02, boxShadow: "0 0 30px var(--kuma-gold-dim)", borderColor: "var(--kuma-gold)", duration: 0.5 });
+                } else {
+                    gsap.to(card, { opacity: 0.1, filter: "grayscale(100%)", scale: 0.95, duration: 0.5 });
+                }
+            });
+
+            const currentCard = document.getElementById(`phase-${index}`);
+            if (currentCard) {
+                const headerOffset = 180;
+                const elementPosition = currentCard.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+
+        function togglePauseSession() {
+            playClick();
+            if (sessionPaused) {
+                sessionPaused = false;
+                document.getElementById('btn-pause').innerText = "⏸ PAUSAR";
+                startGlobalTimer();
+            } else {
+                sessionPaused = true;
+                document.getElementById('btn-pause').innerText = "▶ REANUDAR";
+                stopGlobalTimer();
+            }
+        }
+
+        function startGlobalTimer() {
+            if (globalTimerInterval) clearInterval(globalTimerInterval);
+            globalTimerInterval = setInterval(() => {
+                globalTime++;
+                updateGlobalDisplay();
+            }, 1000);
+        }
+
+        function stopGlobalTimer() {
+            if (globalTimerInterval) clearInterval(globalTimerInterval);
+        }
+
+        function updateGlobalDisplay() {
+            const m = Math.floor(globalTime / 60).toString().padStart(2, '0');
+            const s = (globalTime % 60).toString().padStart(2, '0');
+            document.getElementById('global-timer').innerText = `${m}:${s}`;
+        }
+
+
+        // --- INDIVIDUAL TOOLS ---
+
+        function toggleTimer(btn) {
+            playClick();
+            const parent = btn.closest('.exercise-item');
+            const timerBox = parent.querySelector('.timer-box');
+            const counterBox = parent.querySelector('.counter-box');
+            counterBox.classList.remove('active-tool');
+            timerBox.classList.toggle('active-tool');
+        }
+
+        function toggleCounter(btn) {
+            playClick();
+            const parent = btn.closest('.exercise-item');
+            const timerBox = parent.querySelector('.timer-box');
+            const counterBox = parent.querySelector('.counter-box');
+            timerBox.classList.remove('active-tool');
+            counterBox.classList.toggle('active-tool');
+        }
+
+        // Timer with SVG Ring
+        function startTimer(btn, ringId) {
+            playClick();
+            const textDisplay = btn.parentElement.previousElementSibling.querySelector('.timer-text-overlay');
+            const circle = document.getElementById(ringId);
+            const circumference = 326; // 2 * pi * 52
+
+            if (btn.innerText === "Stop") {
+                clearInterval(btn.dataset.intervalId);
+                btn.innerText = "Start";
+                return;
+            }
+
+            let seconds = 0;
+            btn.innerText = "Stop";
+
+            // Reset ring
+            circle.style.strokeDashoffset = circumference;
+
+            const startTime = Date.now();
+
+            const intervalId = setInterval(() => {
+                const delta = Date.now() - startTime;
+                seconds = Math.floor(delta / 1000);
+
+                // Update Text
+                const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const s = (seconds % 60).toString().padStart(2, '0');
+                textDisplay.innerText = `${m}:${s}`;
+
+                // Update Ring (Pure visual loop every 60s)
+                const progress = (seconds % 60) / 60;
+                const offset = circumference - (progress * circumference);
+                circle.style.strokeDashoffset = offset;
+
+            }, 1000);
+
+            btn.dataset.intervalId = intervalId;
+        }
+
+        function resetTimer(btn, ringId) {
+            playClick();
+            const startBtn = btn.previousElementSibling;
+            const textDisplay = btn.parentElement.previousElementSibling.querySelector('.timer-text-overlay');
+            const circle = document.getElementById(ringId);
+
+            if (startBtn.innerText === "Stop") {
+                clearInterval(startBtn.dataset.intervalId);
+                startBtn.innerText = "Start";
+            }
+            textDisplay.innerText = "00:00";
+            circle.style.strokeDashoffset = 326;
+        }
+
+        function adjustCounter(btn, amount) {
+            playClick();
+            const display = btn.parentElement.previousElementSibling;
+            let current = parseInt(display.innerText);
+            current += amount;
+            if (current < 0) current = 0;
+            display.innerText = current;
+
+            if (current === 0) {
+                display.style.color = "#4caf50";
+                playGong(); // Success Sound!
+                gsap.to(display, { scale: 1.3, duration: 0.2, yoyo: true, repeat: 1, ease: "power1.inOut" });
+            } else {
+                display.style.color = "#fff";
+                gsap.fromTo(display, { scale: 1.1 }, { scale: 1, duration: 0.1 });
+            }
+        }
+
+        function resetCounter(btn, initialValue) {
+            playClick();
+            const display = btn.parentElement.previousElementSibling;
+            display.innerText = initialValue;
+            display.style.color = "#fff";
+            gsap.to(display, { rotation: 360, duration: 0.5, clearProps: "rotation" });
+        }
+    </script>
+
+</body>
+
+</html>
